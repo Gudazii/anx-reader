@@ -48,7 +48,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.anxcye.anx_reader"
+        applicationId "com.anxcye.anx_reader.highrefresh"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion flutter.minSdkVersion
@@ -69,7 +69,7 @@ android {
     buildTypes {
         release {
             // signingConfig signingConfigs.debug
-            signingConfig signingConfigs.release
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
 
         }
     }
@@ -81,7 +81,7 @@ android {
                 def abiName = output.getFilter(com.android.build.OutputFile.ABI)
                 switch(abiName) {
                     case "armeabi-v7a":
-                        abiVersionCode = 0 
+                        abiVersionCode = 0
                         break
                     case "arm64-v8a":
                         abiVersionCode = 0

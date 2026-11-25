@@ -1,13 +1,49 @@
 package com.anxcye.anx_reader
 
-import android.content.pm.PackageManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : AudioServiceActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestHighRefreshRate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestHighRefreshRate()
+    }
+
+    private fun requestHighRefreshRate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val currentDisplay = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                display
+            } else {
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay
+            } ?: return
+
+            val currentMode = currentDisplay.mode
+            val bestMode = currentDisplay.supportedModes
+                .filter {
+                    it.physicalWidth == currentMode.physicalWidth &&
+                        it.physicalHeight == currentMode.physicalHeight
+                }
+                .maxByOrNull { it.refreshRate }
+
+            if (bestMode != null && window.attributes.preferredDisplayModeId != bestMode.modeId) {
+                window.attributes = window.attributes.apply {
+                    preferredDisplayModeId = bestMode.modeId
+                }
+            }
+        }
+    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
